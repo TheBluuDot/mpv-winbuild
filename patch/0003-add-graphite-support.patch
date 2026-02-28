@@ -1,0 +1,73 @@
+Date: Sun, 28 Feb 2026
+Subject: [PATCH] Add graphite2 support
+
+---
+ packages/CMakeLists.txt   |  1 +
+ packages/graphite2.cmake  | 21 +++++++++++++++++++++
+ packages/harfbuzz.cmake   |  2 ++
+ 3 files changed, 24 insertions(+)
+ create mode 100644 packages/graphite2.cmake
+
+diff --git a/packages/CMakeLists.txt b/packages/CMakeLists.txt
+index aaaaaaa..bbbbbbb 100644
+--- a/packages/CMakeLists.txt
++++ b/packages/CMakeLists.txt
+@@ -39,6 +39,7 @@ list(APPEND ep
+     freetype2
+     libudfread
+     libbluray
++    graphite2
+     harfbuzz
+     libsoxr
+     graphengine
+diff --git a/packages/graphite2.cmake b/packages/graphite2.cmake
+new file mode 100644
+index 0000000..ccccccc
+--- /dev/null
++++ b/packages/graphite2.cmake
+@@ -0,0 +1,21 @@
++ExternalProject_Add(graphite2
++    GIT_REPOSITORY https://github.com/silnrsi/graphite.git
++    SOURCE_DIR ${SOURCE_LOCATION}
++    GIT_CLONE_FLAGS "--filter=tree:0"
++    UPDATE_COMMAND ""
++    PATCH_COMMAND ${EXEC} sed -i "s/SHARED/STATIC/g" src/CMakeLists.txt
++          COMMAND ${EXEC} sed -i "s/add_subdirectory(tests)//g" CMakeLists.txt
++          COMMAND ${EXEC} sed -i "s/add_subdirectory(docs)//g" CMakeLists.txt
++    CONFIGURE_COMMAND ${EXEC} CONF=1 cmake -H<SOURCE_DIR> -B<BINARY_DIR>
++        -G Ninja
++        -DCMAKE_BUILD_TYPE=Release
++        -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_FILE}
++        -DCMAKE_INSTALL_PREFIX=${MINGW_INSTALL_PREFIX}
++        -DCMAKE_FIND_ROOT_PATH=${MINGW_INSTALL_PREFIX}
++        -DCMAKE_C_FLAGS='${CMAKE_C_FLAGS} -DGRAPHITE2_STATIC'
++        -DCMAKE_CXX_FLAGS='${CMAKE_CXX_FLAGS} -DGRAPHITE2_STATIC'
++    BUILD_COMMAND ${EXEC} ninja -C <BINARY_DIR>
++          COMMAND ${EXEC} sed -i "s/Cflags:/Cflags: -DGRAPHITE2_STATIC /" <BINARY_DIR>/graphite2.pc
++    INSTALL_COMMAND ${EXEC} ninja -C <BINARY_DIR> install
++    LOG_DOWNLOAD 1 LOG_UPDATE 1 LOG_CONFIGURE 1 LOG_BUILD 1 LOG_INSTALL 1
++)
++
++force_rebuild_git(graphite2)
++cleanup(graphite2 install)
+diff --git a/packages/harfbuzz.cmake b/packages/harfbuzz.cmake
+index ddddddd..eeeeeee 100644
+--- a/packages/harfbuzz.cmake
++++ b/packages/harfbuzz.cmake
+@@ -2,6 +2,7 @@ ExternalProject_Add(harfbuzz
+     DEPENDS
+         freetype2
+         libpng
++        graphite2
+     GIT_REPOSITORY https://github.com/harfbuzz/harfbuzz.git
+     SOURCE_DIR ${SOURCE_LOCATION}
+@@ -19,6 +20,7 @@ ExternalProject_Add(harfbuzz
+         -Dtests=disabled
+         -Ddocs=disabled
+         -Dbenchmark=disabled
++        -Dgraphite2=enabled
+     BUILD_COMMAND ${EXEC} ninja -C <BINARY_DIR>
+     INSTALL_COMMAND ${EXEC} ninja -C <BINARY_DIR> install
+     LOG_DOWNLOAD 1 LOG_UPDATE 1 LOG_CONFIGURE 1 LOG_BUILD 1 LOG_INSTALL 1
+-- 
+2.43.0
