@@ -5,9 +5,9 @@ Subject: [PATCH] Add graphite2 support
 
 ---
  packages/CMakeLists.txt  |  1 +
- packages/graphite2.cmake | 20 ++++++++++++++++++++
+ packages/graphite2.cmake | 21 +++++++++++++++++++++
  packages/harfbuzz.cmake  |  2 ++
- 3 files changed, 23 insertions(+)
+ 3 files changed, 24 insertions(+)
  create mode 100644 packages/graphite2.cmake
 
 diff --git a/packages/CMakeLists.txt b/packages/CMakeLists.txt
@@ -27,13 +27,15 @@ new file mode 100644
 index 0000000..0000000
 --- /dev/null
 +++ b/packages/graphite2.cmake
-@@ -0,0 +1,20 @@
+@@ -0,0 +1,21 @@
 +ExternalProject_Add(graphite2
 +    GIT_REPOSITORY https://github.com/silnrsi/graphite.git
 +    SOURCE_DIR ${SOURCE_LOCATION}
 +    GIT_CLONE_FLAGS "--filter=tree:0"
 +    UPDATE_COMMAND ""
-+    PATCH_COMMAND ${EXEC} bash -c "sed -i 's/SHARED/STATIC/g' src/CMakeLists.txt && sed -i 's/add_subdirectory(tests)//g' CMakeLists.txt && sed -i 's/add_subdirectory(docs)//g' CMakeLists.txt"
++    PATCH_COMMAND ${EXEC} sed -i [['s/SHARED/STATIC/g']] <SOURCE_DIR>/src/CMakeLists.txt
++          COMMAND ${EXEC} sed -i [['s/add_subdirectory(tests)//g']] <SOURCE_DIR>/CMakeLists.txt
++          COMMAND ${EXEC} sed -i [['s/add_subdirectory(docs)//g']] <SOURCE_DIR>/CMakeLists.txt
 +    CONFIGURE_COMMAND ${EXEC} CONF=1 cmake -H<SOURCE_DIR> -B<BINARY_DIR>
 +        -G Ninja
 +        -DCMAKE_BUILD_TYPE=Release
@@ -43,8 +45,8 @@ index 0000000..0000000
 +        -DCMAKE_C_FLAGS='${CMAKE_C_FLAGS} -DGRAPHITE2_STATIC'
 +        -DCMAKE_CXX_FLAGS='${CMAKE_CXX_FLAGS} -DGRAPHITE2_STATIC'
 +    BUILD_COMMAND ${EXEC} ninja -C <BINARY_DIR>
-+          COMMAND ${EXEC} bash -c "sed -i 's/Cflags:/Cflags: -DGRAPHITE2_STATIC /' <BINARY_DIR>/graphite2.pc"
 +    INSTALL_COMMAND ${EXEC} ninja -C <BINARY_DIR> install
++            COMMAND ${EXEC} sed -i [['s/Cflags:/Cflags: -DGRAPHITE2_STATIC /']] ${MINGW_INSTALL_PREFIX}/lib/pkgconfig/graphite2.pc
 +    LOG_DOWNLOAD 1 LOG_UPDATE 1 LOG_CONFIGURE 1 LOG_BUILD 1 LOG_INSTALL 1
 +)
 +
