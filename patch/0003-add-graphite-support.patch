@@ -1,14 +1,13 @@
 From ed6ed22d14bc74d812cc936cd0046b01b63bd5ab Mon Sep 17 00:00:00 2001
 From: Github Actions <github-actions@github.com>
-Date: Sun, 1 Mar 2026 00:00:00 +0000
-Subject: [PATCH] Add graphite2 support and fix vulkan patch
+Date: Sat, 28 Feb 2026 00:00:00 +0000
+Subject: [PATCH] Add graphite2 support
 
 ---
  packages/CMakeLists.txt  |  1 +
- packages/graphite2.cmake | 22 ++++++++++++++++++++++
+ packages/graphite2.cmake | 21 +++++++++++++++++++++
  packages/harfbuzz.cmake  |  2 ++
- packages/vulkan.cmake    |  2 +-
- 4 files changed, 26 insertions(+), 1 deletion(-)
+ 3 files changed, 24 insertions(+)
  create mode 100644 packages/graphite2.cmake
 
 diff --git a/packages/CMakeLists.txt b/packages/CMakeLists.txt
@@ -28,13 +27,14 @@ new file mode 100644
 index 0000000..0000000
 --- /dev/null
 +++ b/packages/graphite2.cmake
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,21 @@
 +ExternalProject_Add(graphite2
 +    GIT_REPOSITORY https://github.com/silnrsi/graphite.git
 +    SOURCE_DIR ${SOURCE_LOCATION}
 +    GIT_CLONE_FLAGS "--filter=tree:0"
 +    UPDATE_COMMAND ""
-+    PATCH_COMMAND ${EXEC} sed -i [['s/add_subdirectory(tests)//g']] <SOURCE_DIR>/CMakeLists.txt
++    PATCH_COMMAND ${EXEC} sed -i [['s/SHARED/STATIC/g']] <SOURCE_DIR>/src/CMakeLists.txt
++          COMMAND ${EXEC} sed -i [['s/add_subdirectory(tests)//g']] <SOURCE_DIR>/CMakeLists.txt
 +          COMMAND ${EXEC} sed -i [['s/add_subdirectory(docs)//g']] <SOURCE_DIR>/CMakeLists.txt
 +    CONFIGURE_COMMAND ${EXEC} CONF=1 cmake -H<SOURCE_DIR> -B<BINARY_DIR>
 +        -G Ninja
@@ -42,8 +42,6 @@ index 0000000..0000000
 +        -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_FILE}
 +        -DCMAKE_INSTALL_PREFIX=${MINGW_INSTALL_PREFIX}
 +        -DCMAKE_FIND_ROOT_PATH=${MINGW_INSTALL_PREFIX}
-+        -DBUILD_SHARED_LIBS=OFF
-+        -DGRAPHITE2_COMPARE_RENDERER=OFF
 +        -DCMAKE_C_FLAGS='${CMAKE_C_FLAGS} -DGRAPHITE2_STATIC'
 +        -DCMAKE_CXX_FLAGS='${CMAKE_CXX_FLAGS} -DGRAPHITE2_STATIC'
 +    BUILD_COMMAND ${EXEC} ninja -C <BINARY_DIR>
@@ -74,18 +72,5 @@ index 0000000..0000000 100644
      BUILD_COMMAND ${EXEC} ninja -C <BINARY_DIR>
      INSTALL_COMMAND ${EXEC} ninja -C <BINARY_DIR> install
      LOG_DOWNLOAD 1 LOG_UPDATE 1 LOG_CONFIGURE 1 LOG_BUILD 1 LOG_INSTALL 1
-diff --git a/packages/vulkan.cmake b/packages/vulkan.cmake
-index 0000000..0000000 100644
---- a/packages/vulkan.cmake
-+++ b/packages/vulkan.cmake
-@@ -6,7 +6,7 @@ ExternalProject_Add(vulkan
-     UPDATE_COMMAND ""
-     GIT_REMOTE_NAME origin
-     GIT_TAG main
--    PATCH_COMMAND ${EXEC} git am --3way ${CMAKE_CURRENT_SOURCE_DIR}/vulkan-*.patch
-+    PATCH_COMMAND ""
-     CONFIGURE_COMMAND ${EXEC} CONF=1 cmake -H<SOURCE_DIR> -B<BINARY_DIR>
-         -G Ninja
-         -DCMAKE_BUILD_TYPE=Release
 -- 
 2.43.0
