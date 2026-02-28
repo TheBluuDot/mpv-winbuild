@@ -1,7 +1,7 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: User <user@example.com>
-Date: Mon, 1 Jan 2025 00:00:00 +0000
-Subject: [PATCH] Add statically linked graphite2 support
+From ed6ed22d14bc74d812cc936cd0046b01b63bd5ab Mon Sep 17 00:00:00 2001
+From: Github Actions <github-actions@github.com>
+Date: Sat, 28 Feb 2026 00:00:00 +0000
+Subject: [PATCH] Add graphite2 support
 
 ---
  packages/CMakeLists.txt              |  1 +
