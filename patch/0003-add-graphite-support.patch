@@ -1,13 +1,14 @@
 From ed6ed22d14bc74d812cc936cd0046b01b63bd5ab Mon Sep 17 00:00:00 2001
 From: Github Actions <github-actions@github.com>
-Date: Sat, 28 Feb 2026 00:00:00 +0000
-Subject: [PATCH] Add graphite2 support
+Date: Sun, 1 Mar 2026 00:00:00 +0000
+Subject: [PATCH] Add graphite2 support and fix vulkan patch
 
 ---
  packages/CMakeLists.txt  |  1 +
- packages/graphite2.cmake | 23 +++++++++++++++++++++++
+ packages/graphite2.cmake | 22 ++++++++++++++++++++++
  packages/harfbuzz.cmake  |  2 ++
- 3 files changed, 26 insertions(+)
+ packages/vulkan.cmake    |  2 +-
+ 4 files changed, 26 insertions(+), 1 deletion(-)
  create mode 100644 packages/graphite2.cmake
 
 diff --git a/packages/CMakeLists.txt b/packages/CMakeLists.txt
@@ -27,7 +28,7 @@ new file mode 100644
 index 0000000..0000000
 --- /dev/null
 +++ b/packages/graphite2.cmake
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,22 @@
 +ExternalProject_Add(graphite2
 +    GIT_REPOSITORY https://github.com/silnrsi/graphite.git
 +    SOURCE_DIR ${SOURCE_LOCATION}
@@ -73,5 +74,18 @@ index 0000000..0000000 100644
      BUILD_COMMAND ${EXEC} ninja -C <BINARY_DIR>
      INSTALL_COMMAND ${EXEC} ninja -C <BINARY_DIR> install
      LOG_DOWNLOAD 1 LOG_UPDATE 1 LOG_CONFIGURE 1 LOG_BUILD 1 LOG_INSTALL 1
+diff --git a/packages/vulkan.cmake b/packages/vulkan.cmake
+index 0000000..0000000 100644
+--- a/packages/vulkan.cmake
++++ b/packages/vulkan.cmake
+@@ -6,7 +6,7 @@ ExternalProject_Add(vulkan
+     UPDATE_COMMAND ""
+     GIT_REMOTE_NAME origin
+     GIT_TAG main
+-    PATCH_COMMAND ${EXEC} git am --3way ${CMAKE_CURRENT_SOURCE_DIR}/vulkan-*.patch
++    PATCH_COMMAND ""
+     CONFIGURE_COMMAND ${EXEC} CONF=1 cmake -H<SOURCE_DIR> -B<BINARY_DIR>
+         -G Ninja
+         -DCMAKE_BUILD_TYPE=Release
 -- 
 2.43.0
